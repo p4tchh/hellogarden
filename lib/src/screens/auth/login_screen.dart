@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,23 +13,73 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {
-    // Add your login logic here
-    print('Logging in...');
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackBar('Email and password are required');
+      return;
+    }
+
+    try {
+      // Sign in with Supabase
+      final response = await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      if (response.session != null) {
+        print('Login successful!');
+
+        // Fetch the user's role from the profiles table
+        final userId = response.user!.id;
+        final profileResponse = await Supabase.instance.client
+            .from('profiles')
+            .select('role')
+            .eq('id', userId)
+            .maybeSingle(); // Fetch a single row if it exists
+
+        if (profileResponse != null) {
+          final role = profileResponse['role'] as String?;
+
+          // Navigate based on the role
+          if (role == 'admin') {
+            Navigator.pushNamed(context, '/admin_dashboard');
+          } else if (role == 'user') {
+            Navigator.pushNamed(context, '/user_dashboard');
+          } else {
+            _showSnackBar('Unknown role: $role');
+          }
+        } else {
+          _showSnackBar('Profile not found for this user');
+        }
+      } else {
+        _showSnackBar('Invalid email or password');
+      }
+    } catch (error) {
+      print('Login error: $error');
+      _showSnackBar('An error occurred during login');
+    }
+  }
+
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF4DE165), // Custom background color
-      body: Padding(
+      backgroundColor: Color(0xFF4DE165),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 50), // Space from the top
+            SizedBox(height: 50),
             Image.asset(
-              'assets/images/logo.png', // Logo path
+              'assets/images/logo.png',
               height: 150,
               width: 150,
             ),
@@ -55,9 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 20),
             CustomButton(
               text: 'Login',
-              onPressed: () {
-                Navigator.pushNamed(context, '/user_dashboard');
-              },
+              onPressed: _login,
             ),
             SizedBox(height: 5),
             Row(
@@ -68,19 +117,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.pushNamed(context, '/register');
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.white, // White text color
+                    foregroundColor: Colors.white,
                   ),
-                  child: Text('Create new account?', style: TextStyle(fontStyle: FontStyle.italic),),
+                  child: Text(
+                    'Create new account?',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
                 ),
-                SizedBox(width: 130), // Space between the buttons
+                SizedBox(width: 130),
                 TextButton(
                   onPressed: () {
-                    print('Forgot Password pressed'); // Placeholder for action
+                    print('Forgot Password pressed');
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.white, // White text color
+                    foregroundColor: Colors.white,
                   ),
-                  child: Text('Forgot Password?', style: TextStyle(fontStyle: FontStyle.italic)),
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),
                 ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,26 +14,76 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   String? _selectedGender;
   DateTime? _birthDate;
 
-  void _register() {
-    print(
-        'Registering with First Name: ${_firstNameController.text}, Last Name: ${_lastNameController.text}, Gender: $_selectedGender, Birthdate: $_birthDate, Email: ${_emailController.text}, Password: ${_passwordController.text}');
+  void _register() async {
+    // Validate inputs
+    if (_firstNameController.text.isEmpty ||
+        _lastNameController.text.isEmpty ||
+        _selectedGender == null ||
+        _birthDate == null ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      print('All fields are required');
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      print('Passwords do not match');
+      return;
+    }
+
+    try {
+      // Sign up the user
+      final response = await Supabase.instance.client.auth.signUp(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (response.user != null) {
+        print('User created in auth.users');
+
+        // Insert the user's profile into the profiles table
+        await Supabase.instance.client.from('profiles').insert({
+          'id': response.user!.id, // Matches auth.uid()
+          'first_name': _firstNameController.text,
+          'last_name': _lastNameController.text,
+          'gender': _selectedGender,
+          'birthdate': _birthDate?.toIso8601String(), // Convert DateTime to ISO format
+          'email': _emailController.text,
+          'role': 'user', // Default role
+        });
+
+        print('Profile added successfully!');
+        Navigator.pushNamed(context, '/login_screen.dart'); // Navigate to the user dashboard
+      } else {
+        print('Registration failed: Unknown error occurred');
+      }
+    } catch (error) {
+      // Handle exceptions thrown by Supabase
+      print('Error during registration: $error');
+    }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF4DE165), // Custom background color
+      backgroundColor: Color(0xFF4DE165),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 50), // Space from the top
+            SizedBox(height: 50),
             Image.asset(
-              'assets/images/logo.png', // Logo path
+              'assets/images/logo.png',
               height: 150,
               width: 150,
             ),
@@ -40,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Text(
               'Register',
               style: GoogleFonts.irishGrover(
-                fontSize: 48, // Adjusted size for better layout
+                fontSize: 48,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -63,13 +114,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 20,),
+            SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
                   child: CustomDropdownButton(
                     hintText: 'Gender',
-                    items: ['Male', 'Female', 'Other'], // Gender options
+                    items: ['Male', 'Female', 'Other'],
                     onChanged: (value) {
                       setState(() {
                         _selectedGender = value;
@@ -77,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                 ),
-                SizedBox(width: 16), // Space between Gender and Birthdate
+                SizedBox(width: 16),
                 Expanded(
                   child: CustomDateButton(
                     hintText: 'Select Birthdate',
@@ -103,8 +154,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             SizedBox(height: 20),
             CustomTextField(
-              controller: _passwordController,
-              hintText: 'Confirm-Password',
+              controller: _confirmPasswordController,
+              hintText: 'Confirm Password',
               obscureText: true,
             ),
             SizedBox(height: 30),
@@ -118,7 +169,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/login'); // Navigate to Login
+                    Navigator.pushNamed(context, '/login');
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.white,
