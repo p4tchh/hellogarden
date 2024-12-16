@@ -29,3 +29,8 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/logo2.png
+    - assets/images/plant1.jpg
+    - assets/images/plant2.jpg
+    - assets/images/plant3.jpg
+    - assets/images/plant4.jpg
+    - assets/images/plant5.jpg

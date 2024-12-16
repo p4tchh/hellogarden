@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 5),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
                   onPressed: () {
@@ -124,7 +124,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(fontStyle: FontStyle.italic),
                   ),
                 ),
-                SizedBox(width: 130),
                 TextButton(
                   onPressed: () {
                     print('Forgot Password pressed');
