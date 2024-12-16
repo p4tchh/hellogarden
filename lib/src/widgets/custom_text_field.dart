@@ -9,8 +9,8 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     required this.hintText,
     this.obscureText = false,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class UserDashboard extends StatefulWidget {
+  const UserDashboard({super.key});
+
   @override
   _UserDashboardState createState() => _UserDashboardState();
 }

@@ -8,8 +8,8 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     required this.text,
     required this.onPressed,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +46,8 @@ class CustomButton2 extends StatelessWidget {
   const CustomButton2({
     required this.text,
     required this.onPressed,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +85,8 @@ class CustomDropdownButton extends StatefulWidget {
     required this.hintText,
     required this.items,
     required this.onChanged,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _CustomDropdownButtonState createState() => _CustomDropdownButtonState();
@@ -157,8 +157,8 @@ class CustomDateButton extends StatefulWidget {
   const CustomDateButton({
     required this.hintText,
     required this.onDateSelected,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _CustomDateButtonState createState() => _CustomDateButtonState();
