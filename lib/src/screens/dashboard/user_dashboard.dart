@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:hellogarden/src/screens/guides/vegetable_guide.dart';
+import 'package:hellogarden/src/screens/guides/fruit_guide.dart';
+import 'package:hellogarden/src/screens/guides/compost_guide.dart';
+import 'package:hellogarden/src/screens/guides/soil_guide.dart';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({super.key});
@@ -37,13 +41,39 @@ class _UserDashboardState extends State<UserDashboard> {
   ];
 
   void _onBoxTap(String label) {
-    print('Tapped on: $label');
+    switch (label) {
+      case 'Vegetables':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const VegetableGuide()),
+        );
+        break;
+      case 'Fruits':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const FruitGuide()),
+        );
+        break;
+      case 'Compost':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CompostGuide()),
+        );
+        break;
+      case 'Soil':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SoilGuide()),
+        );
+        break;
+    }
   }
 
   void _logout() {
     // Add your logout logic here (e.g., clear user session, token, etc.)
     print('User logged out');
-    Navigator.of(context).pushReplacementNamed('/login'); // Navigate to the login page
+    Navigator.of(context)
+        .pushReplacementNamed('/login'); // Navigate to the login page
   }
 
   @override
@@ -89,7 +119,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       prefixIcon: Icon(Icons.search, color: Colors.grey),
                       border: InputBorder.none,
                       contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                     onChanged: (value) {
                       print('Search query: $value');
@@ -127,7 +157,7 @@ class _UserDashboardState extends State<UserDashboard> {
               // Four Boxes
               Padding(
                 padding:
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 child: GridView.count(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
@@ -175,7 +205,6 @@ class _UserDashboardState extends State<UserDashboard> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-
                   ],
                 ),
               ),
